@@ -8,6 +8,9 @@ from tkinter import filedialog
 from cv2 import cvtColor, imread, imshow
 import numpy as np
 import cv2 as cv
+import os
+from tkinter.filedialog import asksaveasfilename
+
 
 # CODE
 
@@ -44,11 +47,7 @@ def files_images():
     file_path = filedialog.askopenfilename(
         initialdir="./images", title="Select File", filetypes=(("jpg files", "*.jpg"), ("all files", "*.*")))
     return file_path
-
-def files_save_images():
-    file_path = filedialog.asksaveasfilename(
-        initialdir="./Images after processing", title="Save File", filetypes=(("jpg files", "*.jpg"), ("all files", "*.*")))
-    return file_path
+    
 
 def importFile():
     global image
@@ -61,11 +60,18 @@ def importFile():
     updateOrignal(originalImage)
     updateAfterProcessing(image)
 
+
 def saveFile():
-    print('test')
-    img_path = files_save_images()
-    image = Image.open(import_img_path)
-    image = image.save('test')
+    store_temp_image(frame_after_processing.picture)
+
+
+def store_temp_image(imagetk):
+    new_file_name = asksaveasfilename(initialdir="./Images after processing/", title="Select file", defaultextension=".png", filetypes=(
+        ('JPEG', ('*.jpg', '*.jpeg', '*.jpe', '*.jfif')), ('PNG', '*.png'), ('BMP', ('*.bmp', '*.jdib')), ('GIF', '*.gif')))
+    imgpil = ImageTk.getimage(imagetk)
+    imgpil.save(os.path.join("./Images after processing/", new_file_name), "PNG")
+    imgpil.close()
+
 
 def updateOrignal(img):
     np_array = np.array(img)
@@ -81,7 +87,6 @@ def updateAfterProcessing(img):
     frame_after_processing.picture = ImageTk.PhotoImage(pil_image)   
     frame_after_processing.label = Label(frame_after_processing, image = frame_after_processing.picture)
     frame_after_processing.label.place(x=0, y=0)
-    
 
 
 # Binary
@@ -142,7 +147,7 @@ def setPowerLawTransformationValue():
 
 
 # Piecewise-Linear Transformation  
-def pieceWiseLinearTransformation():
+def pieceWiseLinearTransformation(self):
     r1 = sliderPiecewiseLinearTransformation_r1.get()
     s1 = sliderPiecewiseLinearTransformation_s1.get()
     r2 = sliderPiecewiseLinearTransformation_r2.get()
@@ -157,6 +162,7 @@ def pieceWiseLinearTransformation():
     pixelVal_vec = np.vectorize(pixelVal)
   
     img_temp = pixelVal_vec(image, r1, s1, r2, s2)
+    img_temp = img_temp.astype(np.uint8)
     updateAfterProcessing(img_temp)
 
 def setPieceWiseLinearTransformation():
@@ -250,16 +256,16 @@ btn_MedianBlur = Button(form_main, text="Median Blur", command = setMedianBlurVa
 btn_MedianBlur.place(x=450, y=340)
 
 btn_sharpening = Button(form_main, text="Sharpening", command = sharpening, width=20, height=2, fg="black", bg="yellow")
-btn_sharpening.place(x=450, y=465)
+btn_sharpening.place(x=1100, y=50)
 
 btn_minFilter = Button(form_main, text="Min Filter", command = minFilter, width=20, height=2, fg="black", bg="yellow")
-btn_minFilter.place(x=450, y=510)
+btn_minFilter.place(x=1100, y=100)
 
 btn_maxFilter = Button(form_main, text="Max Filter", command = maxFilter, width=20, height=2, fg="black", bg="yellow")
-btn_maxFilter.place(x=450, y=555)
+btn_maxFilter.place(x=1100, y=150)
 
 btn_laplace = Button(form_main, text="Laplace", command = setLaplaceValue, width=20, height=2, fg="black", bg="yellow")
-btn_laplace.place(x=450, y=600)
+btn_laplace.place(x=450, y=460)
 # ----------------------------------------------------------------------------
 
 # *Sliders control
@@ -288,7 +294,7 @@ sliderMedianBlur = Scale(form_main, from_=1, to =255, orient= HORIZONTAL, tickin
 sliderMedianBlur.place(x=450, y=385)
 
 sliderLaplace = Scale(form_main, from_=1, to =27, orient= HORIZONTAL, tickinterval= 50, command = laplace, length = 200)
-sliderLaplace.place(x=450, y=645)
+sliderLaplace.place(x=450, y=500)
 # ----------------------------------------------------------------------------
 
 
