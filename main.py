@@ -28,6 +28,19 @@ label_1.place(x=35, y=35)
 label_2 = Label(form_main, text= "After processing")
 label_2.config(font=("Courier", 12))
 label_2.place(x=35, y=345)
+
+label_r1 = Label(form_main, text= "r1")
+label_r1.config(font=("Courier", 12))
+label_r1.place(x=420, y=110)
+label_s1 = Label(form_main, text= "s1")
+label_s1.config(font=("Courier", 12))
+label_s1.place(x=420, y=165)
+label_r2 = Label(form_main, text= "r2")
+label_r2.config(font=("Courier", 12))
+label_r2.place(x=420, y=220)
+label_s2 = Label(form_main, text= "s2")
+label_s2.config(font=("Courier", 12))
+label_s2.place(x=420, y=275)
 # ----------------------------------------------------------------------------
 
 # Frame
