@@ -18,11 +18,6 @@ form_main = Tk()
 form_main.geometry("1300x750+120+20")
 form_main.title("Digital Image Processing")
 
-# Global variable
-originalImage = cv.imread("./airplane.png")
-# image = originalImage
-
-
 # Label
 namePorject = Label(form_main, text= "Tool for image enhancement and image filter in spatial domain")
 namePorject.config(font=("Courier bold", 14), bg="blue", fg="white")
@@ -52,6 +47,7 @@ def files_images():
 def importFile():
     global image
     global import_img_path
+    global originalImage
     import_img_path = files_images()
     originalImage = cv.imread(import_img_path)
     originalImage = cv.resize(originalImage, (350, 250))
@@ -64,6 +60,9 @@ def importFile():
 def saveFile():
     store_temp_image(frame_after_processing.picture)
 
+
+def clear():
+    updateAfterProcessing(image)
 
 def store_temp_image(imagetk):
     new_file_name = asksaveasfilename(initialdir="./Images after processing/", title="Select file", defaultextension=".png", filetypes=(
@@ -91,7 +90,6 @@ def updateAfterProcessing(img):
 
 # Binary
 def binary(var):
-
     img_temp = cvtColor(image, cv.COLOR_BGR2GRAY)
     img = cv.adaptiveThreshold(img_temp, maxValue=255, adaptiveMethod=cv.ADAPTIVE_THRESH_MEAN_C, 
                                   thresholdType=cv.THRESH_BINARY, blockSize=15, C=sliderBinary.get())
@@ -105,16 +103,6 @@ def setBinaryValue():
 # Negative
 def negative(var):
     img_temp = sliderNegative.get() - image
-    # img_temp = image
-    # height, width, _ = image.shape
-    # for i in range(0, height - 1):
-    #     for j in range(0, width - 1):
-    #         c = sliderBinary.get()
-    #         pixel = image[i, j]
-    #         pixel[0] = c - pixel[0]
-    #         pixel[1] = c - pixel[1]
-    #         pixel[2] = c - pixel[2]
-    #         img_temp[i, j] = pixel
     updateAfterProcessing(img_temp)    
 
 def setNegativeValue():
@@ -236,6 +224,10 @@ btn_import_img.place(x=30, y=700)
 btn_save_img = Button(form_main, text="Save image", command =lambda:saveFile(), width=15, height=2, fg="black", bg="yellow")
 btn_save_img.place(x=170, y=700)
 
+# +Button clear
+btn_clear = Button(form_main, text="Clear", command = clear, width=15, height=2, fg="black", bg="pink")
+btn_clear.place(x=310, y=700)
+
 # Button processing
 btn_binary = Button(form_main, text="Binary", command = setBinaryValue, width=15, height=2, fg="black", bg="yellow")
 btn_binary.place(x=780, y=50)
@@ -293,7 +285,7 @@ sliderPiecewiseLinearTransformation_s2.place(x=450, y=260)
 sliderMedianBlur = Scale(form_main, from_=1, to =255, orient= HORIZONTAL, tickinterval= 50, command = medianBlur, length = 200)
 sliderMedianBlur.place(x=450, y=385)
 
-sliderLaplace = Scale(form_main, from_=1, to =27, orient= HORIZONTAL, tickinterval= 50, command = laplace, length = 200)
+sliderLaplace = Scale(form_main, from_=0, to =27, orient= HORIZONTAL, tickinterval= 3, command = laplace, length = 200)
 sliderLaplace.place(x=450, y=500)
 # ----------------------------------------------------------------------------
 
