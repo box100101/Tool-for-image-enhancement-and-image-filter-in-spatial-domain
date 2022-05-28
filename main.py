@@ -20,7 +20,7 @@ form_main.title("Digital Image Processing")
 
 # Label
 namePorject = Label(form_main, text= "Tool for image enhancement and image filter in spatial domain")
-namePorject.config(font=("Courier bold", 14), bg="blue", fg="white")
+namePorject.config(font=("Courier bold", 14), bg="green", fg="white")
 namePorject.pack()
 label_1 = Label(form_main, text= "Original")
 label_1.config(font=("Courier", 12))
@@ -29,25 +29,25 @@ label_2 = Label(form_main, text= "After processing")
 label_2.config(font=("Courier", 12))
 label_2.place(x=35, y=345)
 
-label_r1 = Label(form_main, text= "r1")
-label_r1.config(font=("Courier", 12))
-label_r1.place(x=420, y=110)
-label_s1 = Label(form_main, text= "s1")
-label_s1.config(font=("Courier", 12))
-label_s1.place(x=420, y=165)
-label_r2 = Label(form_main, text= "r2")
-label_r2.config(font=("Courier", 12))
-label_r2.place(x=420, y=220)
-label_s2 = Label(form_main, text= "s2")
-label_s2.config(font=("Courier", 12))
-label_s2.place(x=420, y=275)
+label_transformation_function = Label(form_main, text= "Transformation Functions")
+label_transformation_function.config(font=("Courier", 12), bg="orange", fg="black")
+label_transformation_function.place(x=460, y=60)
+
+label_filter = Label(form_main, text= "Filter")
+label_filter.config(font=("Courier", 12), bg="orange", fg="black")
+label_filter.place(x=880, y=60)
 # ----------------------------------------------------------------------------
 
 # Frame
-frame_original = Frame(form_main, width=358, height=258, highlightbackground = "black", highlightthickness= 2 , bg= "white", relief=SUNKEN)
+frame_original = Frame(form_main, width=398, height=258, highlightbackground = "black", highlightthickness= 2 , bg= "white", relief=SUNKEN)
 frame_original.place(x=35, y=60)
-frame_after_processing = Frame(form_main, width=358, height=258, highlightbackground = "black", highlightthickness= 2 , bg= "white", relief=SUNKEN)
+frame_after_processing = Frame(form_main, width=398, height=258, highlightbackground = "black", highlightthickness= 2 , bg= "white", relief=SUNKEN)
 frame_after_processing.place(x=35, y=370)
+
+frame_function_transformation = Frame(form_main, width=400, height=600, highlightbackground = "black", highlightthickness= 2 , bg= "white", relief=SUNKEN)
+frame_function_transformation.place(x=460, y=90)
+frame_filter = Frame(form_main, width=400, height=600, highlightbackground = "black", highlightthickness= 2 , bg= "white", relief=SUNKEN)
+frame_filter.place(x=880, y=90)
 # ----------------------------------------------------------------------------
 
 # Function
@@ -63,7 +63,7 @@ def importFile():
     global originalImage
     import_img_path = files_images()
     originalImage = cv.imread(import_img_path)
-    originalImage = cv.resize(originalImage, (350, 250))
+    originalImage = cv.resize(originalImage, (390, 250))
     image = cv.cvtColor(originalImage, cv.COLOR_BGR2RGB)
     originalImage = image
     updateOrignal(originalImage)
@@ -114,13 +114,9 @@ def setBinaryValue():
 # ---------------------------------------------------------------------------
 
 # Negative
-def negative(var):
-    img_temp = sliderNegative.get() - image
+def negative():
+    img_temp = 255 - image
     updateAfterProcessing(img_temp)    
-
-def setNegativeValue():
-    sliderNegative.set(1)
-    negative
 # ---------------------------------------------------------------------------
 
 # Log Transformation
@@ -138,11 +134,12 @@ def setLogTransformationValue():
 
 # Power Law Transformation
 def powerLawTransformation(var):
-    img_temp = np.array(255*(image/255)**(sliderPowerLawTransformation.get()/100),dtype='uint8')
+    img_temp = np.array(sliderPowerLawTransformation_const.get()*(image/255)**(sliderPowerLawTransformation_gamma.get()),dtype='uint8')
     updateAfterProcessing(img_temp)
 
 def setPowerLawTransformationValue():
-    sliderPowerLawTransformation.set(40)
+    sliderPowerLawTransformation_const.set(255)
+    sliderPowerLawTransformation_gamma.set(1.2)
     powerLawTransformation
 # ---------------------------------------------------------------------------
 
@@ -225,6 +222,18 @@ def setLaplaceValue():
 
 # ---------------------------------------------------------------------------
 
+# Gaussian Blur
+def gaussianBlur(var):
+    if(sliderGaussianBlur.get() % 2 != 0):
+        c = sliderGaussianBlur.get()
+        img_temp = cv.GaussianBlur(image, (c,c), 0)
+        updateAfterProcessing(img_temp)
+
+def setGaussianBlurValue():
+    sliderGaussianBlur.set(5)
+    gaussianBlur
+# ---------------------------------------------------------------------------
+
 
 # *Button control
 btn_quit = Button(form_main, text="Quit", command = form_main.quit, width=15, height=2, fg="white", bg="black")
@@ -238,68 +247,73 @@ btn_save_img = Button(form_main, text="Save image", command =lambda:saveFile(), 
 btn_save_img.place(x=170, y=700)
 
 # +Button clear
-btn_clear = Button(form_main, text="Clear", command = clear, width=15, height=2, fg="black", bg="pink")
+btn_clear = Button(form_main, text="Clear", command = clear, width=15, height=2, fg="black", bg="gray")
 btn_clear.place(x=310, y=700)
 
 # Button processing
-btn_binary = Button(form_main, text="Binary", command = setBinaryValue, width=15, height=2, fg="black", bg="yellow")
-btn_binary.place(x=780, y=50)
+btn_binary = Button(form_main, text="Binary", command = setBinaryValue, width=15, height=2, fg="black", bg="#FF6666")
+btn_binary.place(x=665, y=120)
 
-btn_negative = Button(form_main, text="Negative", command = setNegativeValue, width=15, height=2, fg="black", bg="yellow")
-btn_negative.place(x=780, y=180)
+btn_negative = Button(form_main, text="Negative", command = negative, width=15, height=2, fg="black", bg="#FF6666")
+btn_negative.place(x=470, y=460)
 
-btn_logTransformation = Button(form_main, text="Log Transformation", command = setLogTransformationValue, width=15, height=2, fg="black", bg="yellow")
-btn_logTransformation.place(x=780, y=310)
+btn_logTransformation = Button(form_main, text="Log Transformation", command = setLogTransformationValue, width=15, height=2, fg="black", bg="#FF6666")
+btn_logTransformation.place(x=665, y=250)
 
-btn_powerLawTransformation = Button(form_main, text="Power Law Transformation", command = setPowerLawTransformationValue, width=20, height=2, fg="black", bg="yellow")
-btn_powerLawTransformation.place(x=780, y=440)
+btn_powerLawTransformation = Button(form_main, text="Power Law Transformation", command = setPowerLawTransformationValue, width=20, height=2, fg="black", bg="#FF6666")
+btn_powerLawTransformation.place(x=665, y=380)
 
-btn_piecewiseLinearTransformation = Button(form_main, text="Piecewise-Linear Transformation", command = setPieceWiseLinearTransformation, width=25, height=2, fg="black", bg="yellow")
-btn_piecewiseLinearTransformation.place(x=450, y=50)
+btn_piecewiseLinearTransformation = Button(form_main, text="Piecewise-Linear Transformation", command = setPieceWiseLinearTransformation, width=25, height=2, fg="black", bg="#FF6666")
+btn_piecewiseLinearTransformation.place(x=470, y=120)
 
-btn_MedianBlur = Button(form_main, text="Median Blur", command = setMedianBlurValue, width=20, height=2, fg="black", bg="yellow")
-btn_MedianBlur.place(x=450, y=340)
+btn_MedianBlur = Button(form_main, text="Median Blur", command = setMedianBlurValue, width=20, height=2, fg="black", bg="#2467BF")
+btn_MedianBlur.place(x=890, y=120)
 
-btn_sharpening = Button(form_main, text="Sharpening", command = sharpening, width=20, height=2, fg="black", bg="yellow")
-btn_sharpening.place(x=1100, y=50)
+btn_sharpening = Button(form_main, text="Sharpening", command = sharpening, width=20, height=2, fg="black", bg="#2467BF")
+btn_sharpening.place(x=1120, y=120)
 
-btn_minFilter = Button(form_main, text="Min Filter", command = minFilter, width=20, height=2, fg="black", bg="yellow")
-btn_minFilter.place(x=1100, y=100)
+btn_minFilter = Button(form_main, text="Min Filter", command = minFilter, width=20, height=2, fg="black", bg="#2467BF")
+btn_minFilter.place(x=1120, y=170)
 
-btn_maxFilter = Button(form_main, text="Max Filter", command = maxFilter, width=20, height=2, fg="black", bg="yellow")
-btn_maxFilter.place(x=1100, y=150)
+btn_maxFilter = Button(form_main, text="Max Filter", command = maxFilter, width=20, height=2, fg="black", bg="#2467BF")
+btn_maxFilter.place(x=1120, y=220)
 
-btn_laplace = Button(form_main, text="Laplace", command = setLaplaceValue, width=20, height=2, fg="black", bg="yellow")
-btn_laplace.place(x=450, y=460)
+btn_laplace = Button(form_main, text="Laplace", command = setLaplaceValue, width=20, height=2, fg="black", bg="#2467BF")
+btn_laplace.place(x=890, y=250)
+
+btn_gaussianBlur = Button(form_main, text="Gaussian Blur", command = setGaussianBlurValue, width=20, height=2, fg="black", bg="#2467BF")
+btn_gaussianBlur.place(x=890, y=380)
 # ----------------------------------------------------------------------------
 
 # *Sliders control
-sliderBinary = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = binary, length = 200)
-sliderBinary.place(x=780, y=95)
+sliderBinary = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = binary, sliderlength = 10, length = 180, label="c", width=10, bg = "white")
+sliderBinary.place(x=665, y=165)
 
-sliderNegative = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = negative, length = 200)
-sliderNegative.place(x=780, y=225)
+sliderlogTransformation = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = logTransformation, sliderlength = 10, length = 180, label = "pixel value", width=10, bg = "white")
+sliderlogTransformation.place(x=665, y=295)
 
-sliderlogTransformation = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = logTransformation, length = 200)
-sliderlogTransformation.place(x=780, y=355)
+sliderPowerLawTransformation_const = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = powerLawTransformation, sliderlength = 10, length = 180, label="c", width=10, bg = "white")
+sliderPowerLawTransformation_const.place(x=665, y=425)
+sliderPowerLawTransformation_gamma = Scale(form_main, from_=0, to =2.5, orient = HORIZONTAL, tickinterval= 0.5, command = powerLawTransformation, sliderlength = 10, length = 180, label="gamma", width=10, bg = "white", resolution=0.2)
+sliderPowerLawTransformation_gamma.place(x=665, y=495)
 
-sliderPowerLawTransformation = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = powerLawTransformation, length = 200)
-sliderPowerLawTransformation.place(x=780, y=485)
+sliderPiecewiseLinearTransformation_r1 = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = pieceWiseLinearTransformation, sliderlength = 10, length = 180, label="r1", width=10, bg = "white")
+sliderPiecewiseLinearTransformation_r1.place(x=470, y=165)
+sliderPiecewiseLinearTransformation_s1 = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = pieceWiseLinearTransformation, sliderlength = 10, length = 180, label="s1", width=10, bg = "white")
+sliderPiecewiseLinearTransformation_s1.place(x=470, y=235)
+sliderPiecewiseLinearTransformation_r2 = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = pieceWiseLinearTransformation, sliderlength = 10, length = 180, label="r2", width=10, bg = "white")
+sliderPiecewiseLinearTransformation_r2.place(x=470, y=305)
+sliderPiecewiseLinearTransformation_s2 = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = pieceWiseLinearTransformation, sliderlength = 10, length = 180, label="s2", width=10, bg = "white")
+sliderPiecewiseLinearTransformation_s2.place(x=470, y=375)
 
-sliderPiecewiseLinearTransformation_r1 = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = pieceWiseLinearTransformation, length = 200)
-sliderPiecewiseLinearTransformation_r1.place(x=450, y=95)
-sliderPiecewiseLinearTransformation_s1 = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = pieceWiseLinearTransformation, length = 200)
-sliderPiecewiseLinearTransformation_s1.place(x=450, y=150)
-sliderPiecewiseLinearTransformation_r2 = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = pieceWiseLinearTransformation, length = 200)
-sliderPiecewiseLinearTransformation_r2.place(x=450, y=205)
-sliderPiecewiseLinearTransformation_s2 = Scale(form_main, from_=0, to =255, orient = HORIZONTAL, tickinterval= 51, command = pieceWiseLinearTransformation, length = 200)
-sliderPiecewiseLinearTransformation_s2.place(x=450, y=260)
+sliderMedianBlur = Scale(form_main, from_=1, to =15, orient= HORIZONTAL, tickinterval= 3, command = medianBlur, sliderlength = 10, length = 180, label = 'ksize', width =10, bg = "white")
+sliderMedianBlur.place(x=890, y=165)
 
-sliderMedianBlur = Scale(form_main, from_=1, to =255, orient= HORIZONTAL, tickinterval= 50, command = medianBlur, length = 200)
-sliderMedianBlur.place(x=450, y=385)
+sliderLaplace = Scale(form_main, from_=1, to =15, orient= HORIZONTAL, tickinterval= 3, command = laplace, sliderlength = 10, length = 180, label = 'ksize', width =10, bg = "white")
+sliderLaplace.place(x=890, y=295)
 
-sliderLaplace = Scale(form_main, from_=0, to =27, orient= HORIZONTAL, tickinterval= 3, command = laplace, length = 200)
-sliderLaplace.place(x=450, y=500)
+sliderGaussianBlur = Scale(form_main, from_=1, to =15, orient= HORIZONTAL, tickinterval= 3, command = gaussianBlur, sliderlength = 10, length = 180, label = 'ksize', width =10, bg = "white")
+sliderGaussianBlur.place(x=890, y=425)
 # ----------------------------------------------------------------------------
 
 
